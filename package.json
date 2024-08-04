@@ -1,0 +1,21 @@
+{
+  "name": "usdtstaking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@noble/secp256k1": "^1.7.1",
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.8.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "telegraf": "^4.16.3",
+    "tronweb": "^5.3.2"
+  }
+}

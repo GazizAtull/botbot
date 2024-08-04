@@ -1,12 +1,14 @@
 const TelegramBot = require('node-telegram-bot-api');
 const path = require('path');
 const { connectToDb, getDb } = require('./db'); // Путь к вашему модулю подключения к базе данных
-const BOT=process.env.BOT_TOKEN
-// Замените 'YOUR_BOT_TOKEN' на ваш действительный токен бота
-const bot = new TelegramBot(BOT, { polling: true });
+
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const WEBHOOK_URL = `https://walrus-app-h2zfl.ondigitalocean.app/bot${BOT_TOKEN}`; 
+
+const bot = new TelegramBot(BOT_TOKEN);
 
 // Путь к вашему изображению
-const photoPath = path.join(__dirname, 'logo.png'); // Замените 'your-photo-file.png' на ваше имя файла изображения
+const photoPath = path.join(__dirname, 'logo.png');
 
 // Содержание сообщения
 const message = `
@@ -19,7 +21,7 @@ Welcome, <a href="https://t.me/usdtstaking_news">USDTStaking App</a>! 🤝
 
 Experience limitless opportunities for Stake USDT. Our infrastructure, powered by TRON blockchain, ensures optimized transactions and reduced transfer fees.
 
-Be among the pioneers in earning with Tonix!
+Be among the pioneers in earning with USDTStaking App!
 
 Complete missions, invite friends, rent additional mining power to earn even more.
 
@@ -62,13 +64,31 @@ const handleMessage = async (msg) => {
     bot.sendPhoto(chatId, photoPath, { caption: message, ...options });
 };
 
-// Подключение к базе данных и запуск бота
-connectToDb((err) => {
+// Подключение к базе данных и установка вебхука
+connectToDb(async (err) => {
     if (err) {
         console.error('Failed to connect to the database', err);
         process.exit(1);
     } else {
         console.log('Connected to the database');
-        bot.on('message', handleMessage);
+        
+        // Установка вебхука
+        try {
+            await bot.setWebHook(WEBHOOK_URL);
+            console.log('Webhook has been set');
+        } catch (error) {
+            console.error('Failed to set webhook:', error);
+            process.exit(1);
+        }
     }
 });
+
+// Функция для обработки обновлений от Telegram
+const processUpdate = (update) => {
+    if (update.message) {
+        handleMessage(update.message);
+    }
+};
+
+// Экспорт функции для обработки обновлений
+module.exports = { processUpdate };
